@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SuperShop.Data.Entities
 {
-	public class Product
+	public class Product : IEntity // Implementing IEntity interface to ensure that Product has an Id property
 	{
 		public int Id { get; set; }
 

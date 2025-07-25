@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 
 namespace SuperShop.Data
 {
-	public class MockRepository : IRepository
+	public class MockRepository : IRepository //nao preciso mais desse mock, pois agora estou usando o ProductRepository
+											  //public class MockRepository : IRepository // Implementing IRepository interface to provide mock data for products
 	{
 		public void AddProduct(Product product)
 		{

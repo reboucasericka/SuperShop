@@ -28,8 +28,8 @@ namespace SuperShop
             services.AddTransient<SeedDb>();   // Register the SeedDb service to seed the database
 
 			//services.AddScoped<IRepository, Repository>(); // Register the repository service
-			services.AddScoped<IRepository, MockRepository>();
-
+			//services.AddScoped<IRepository, MockRepository>();
+			services.AddScoped<IProductRepository, ProductRepository>(); 
 			services.AddControllersWithViews(); // Add services for controllers with views
 		}
 
