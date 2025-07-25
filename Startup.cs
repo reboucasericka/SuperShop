@@ -25,10 +25,13 @@ namespace SuperShop
                 cfg.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddTransient<SeedDb>();           
+            services.AddTransient<SeedDb>();   // Register the SeedDb service to seed the database
 
-			services.AddControllersWithViews();
-        }
+			//services.AddScoped<IRepository, Repository>(); // Register the repository service
+			services.AddScoped<IRepository, MockRepository>();
+
+			services.AddControllersWithViews(); // Add services for controllers with views
+		}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
