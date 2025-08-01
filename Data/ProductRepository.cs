@@ -1,4 +1,5 @@
 ﻿using SuperShop.Data.Entities;
+using System.Linq;
 
 namespace SuperShop.Data
 {
@@ -6,8 +7,10 @@ namespace SuperShop.Data
 	{
 		public ProductRepository(DataContext context) : base(context) //context vai entrar no construtor da classe base GenericRepository
 		{
-			// Constructor that passes the DataContext to the base class
-			// This allows the ProductRepository to use the methods defined in GenericRepository
+			//public IQueryable<Product> GetAllOrderedByName() // para ordenar os produtos por nome
+			//{
+			//	return base.GetAll().OrderBy(p => p.Name); // ou Price, etc.
+			//}
 		}
 	}
 }

@@ -7,21 +7,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SuperShop.Data;
 using SuperShop.Data.Entities;
+using SuperShop.Helpers;
 
 namespace SuperShop.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly IProductRepository _productRepository;
+		private readonly IUserHelper _userHelper;
 
-        public ProductsController(IProductRepository productRepository)
+		public ProductsController(IProductRepository productRepository, IUserHelper userHelper)
         {
             _productRepository = productRepository;
-        }
+			_userHelper = userHelper;
+		}
         // GET: Products
         public IActionResult Index()
         {
-            return View(_productRepository.GetAll());
+			//var produtos = _productRepository.GetAllOrderedByName(); //para ordenar os produtos por nome
+			//return View(produtos);
+			return View(_productRepository.GetAll().OrderBy(p => p.Name));
+
         }
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -51,7 +57,10 @@ namespace SuperShop.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _productRepository.CreateAsync(product);          // CreateAsync is an async method that adds the product to the database
+                //TODO: MODIFICAR PARA O USER QUE ESTIVER LOGADO
+				//antes de gravar o produto, vamos associar o usuario que esta logado
+                product.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name); // Get the user by email from the UserHelper
+				await _productRepository.CreateAsync(product);          // CreateAsync is an async method that adds the product to the database
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -85,7 +94,9 @@ namespace SuperShop.Controllers
             {
                 try
                 {
-                    await _productRepository.UpdateAsync(product); // UpdateAsync is an async method that updates the product in the database
+					//antes de gravar o produto, vamos associar o usuario que esta logado
+					product.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name); // Get the user by email from the UserHelper
+					await _productRepository.UpdateAsync(product); // UpdateAsync is an async method that updates the product in the database
                 }
                 catch (DbUpdateConcurrencyException)
                 {
