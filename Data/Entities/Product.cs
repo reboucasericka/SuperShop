@@ -34,6 +34,16 @@ namespace SuperShop.Data.Entities
 
 		public User User { get; set; } // Assuming a User entity exists and is related to Product
 
-
+		public string ImageFullPath
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(ImageUrl))
+				{
+					return null; // Return null if ImageUrl is not set
+				}
+				return $"https://localhost:44386{ImageUrl.Substring(1)}"; // Return the full path of the image
+			}
+		}
 	}
 }

@@ -3,8 +3,12 @@ using System.Linq;
 
 namespace SuperShop.Data
 {
+	//**********************
+	//INTERFACE
+	//**********************
 	public interface IProductRepository :IGenericRepository<Product>
 	{
-		//IQueryable<Product> GetAllOrderedByName(); // para ordenar os produtos por nome
+		public IQueryable GetAllWithUsers(); //METODO NOVO
+
 	}
 }
