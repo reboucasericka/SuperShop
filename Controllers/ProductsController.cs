@@ -17,11 +17,19 @@ namespace SuperShop.Controllers
     {
         private readonly IProductRepository _productRepository;
 		private readonly IUserHelper _userHelper;
+		private readonly IImageHelper _imageHelper;
+		private readonly IConverterHelper _converterHelper;
 
-		public ProductsController(IProductRepository productRepository, IUserHelper userHelper)
+		public ProductsController(
+            IProductRepository productRepository, 
+            IUserHelper userHelper, 
+            IImageHelper imageHelper,
+            IConverterHelper converterHelper)
         {
             _productRepository = productRepository;
 			_userHelper = userHelper;
+			_imageHelper = imageHelper;
+			_converterHelper = converterHelper;
 		}
         // GET: Products
         public IActionResult Index()
@@ -63,19 +71,10 @@ namespace SuperShop.Controllers
             {
                 var path = string.Empty; // Initialize the path variable to an empty string
                 if (model.ImageFile != null && model.ImageFile.Length > 0) // Check if the ImageFile is not null
-                {
-                    var guid = Guid.NewGuid().ToString(); // Generate a new GUID for the image file name
-                    var file = $"{guid}.jpg"; // Create a new file name with the GUID and .jpg extension
-
-					path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\products", file); // Combine the current directory with the images folder and the file name
-                    using (var stream = new FileStream(path, FileMode.Create)) // Create a new file stream to write the image file
-                    {
-                        await model.ImageFile.CopyToAsync(stream); // Copy the image file to the stream asynchronously
-					}
-                    path = $"~/images/products/{file}"; // Set the path to the image file in the wwwroot folder
-				}
-                var product = this.ToProduct(model, path); // Convert the ProductViewModel to a Product entity using the ToProduct extension method
-
+                {                   
+					path = await _imageHelper.UploadImageAsync(model.ImageFile, "products");
+				}                
+                var product = _converterHelper.ToProduct(model, path, true);
 				//TODO: MODIFICAR PARA O USER QUE ESTIVER LOGADO
 				//antes de gravar o produto, vamos associar o usuario que esta logado
 				product.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name); // Get the user by email from the UserHelper
@@ -85,21 +84,7 @@ namespace SuperShop.Controllers
             return View(model);
         }
 
-		private Product ToProduct(ProductViewModel model, string path)
-		{
-			return new Product
-            {
-                Id = model.Id,
-				ImageUrl = path, // Set the ImageUrl to the path of the uploaded image
-				IsAvailable = model.IsAvailable,
-				LastPurchase = model.LastPurchase,
-				LastSale = model.LastSale,
-				Name = model.Name,
-                Price = model.Price,      
-                Stock = model.Stock,
-                User = model.User // Assuming the User property is set in the ProductViewModel
-			};
-		}
+		
         //******************************************************************************
 		// GET: Products/Edit/5
 		//EDIT é um método que retorna uma view para editar um produto existente
@@ -116,25 +101,10 @@ namespace SuperShop.Controllers
                 return NotFound();
             }
 			// ANTES DE RETORNAR A VIEW, PRECISAMOS CONVERTER O PRODUCT PARA O PRODUCTVIEWMODEL
-            var model= this.ToProductViewModel(product); // Convert the Product entity to a ProductViewModel using the ToProductViewModel extension method
+            
+            var model = _converterHelper.ToProductViewModel(product);   
 			return View(model);
-        }
-
-		private ProductViewModel ToProductViewModel(Product product)
-		{
-			return new ProductViewModel
-            {
-                Id = product.Id,
-				IsAvailable = product.IsAvailable,
-				LastPurchase = product.LastPurchase,
-				LastSale = product.LastSale,
-				ImageUrl = product.ImageUrl, // Set the ImageUrl to the path of the uploaded image                    
-                Name = product.Name,
-                Price = product.Price,
-                Stock = product.Stock,
-                User = product.User // Assuming the User property is set in the Product entity
-            };
-		}
+        }	
 
 		// POST: Products/Edit/5
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -150,20 +120,16 @@ namespace SuperShop.Controllers
                 try
                 {
                     var path = model.ImageUrl; // Initialize the path variable to the current image URL
-                    if (model.ImageFile != null && model.ImageFile.Length > 0) // Check if the ImageFile is not null
-                    {
-						var guid = Guid.NewGuid().ToString(); // Generate a new GUID for the image file name
-						var file = $"{guid}.jpg"; // Create a new file name with the GUID and .jpg exten
 
-						path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\products", file); // Combine the current directory with the images folder and the file name
-                        using (var stream = new FileStream(path, FileMode.Create)) // Create a new file stream to write the image file
-                        {
-                            await model.ImageFile.CopyToAsync(stream); // Copy the image file to the stream asynchronously
-                        }
-                        path = $"~/images/products/{file}"; // Set the path to the image file in the wwwroot folder
-                    }
-                    var product = this.ToProduct(model, path); // Convert the ProductViewModel to a Product entity using the ToProduct extension method
-					//antes de gravar o produto, vamos associar o usuario que esta logado
+                    if (model.ImageFile != null && model.ImageFile.Length > 0) // Check if the ImageFile is not null
+                    {						
+                        path = await _imageHelper.UploadImageAsync( model.ImageFile, "products");
+					}
+                    
+                    var product = _converterHelper.ToProduct(model, path, false);
+
+
+					//TODO: antes de gravar o produto, vamos associar o usuario que esta logado
 					product.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name); // Get the user by email from the UserHelper
 					await _productRepository.UpdateAsync(product); // UpdateAsync is an async method that updates the product in the database
                 }

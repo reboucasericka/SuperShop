@@ -43,8 +43,10 @@ namespace SuperShop
 
             services.AddTransient<SeedDb>();   // Register the SeedDb service to seed the database
 			services.AddScoped<IUserHelper, UserHelper>(); // Register the IUserHelper service for user management
-		//services.AddScoped<IRepository, Repository>(); // Register the repository service
-		//services.AddScoped<IRepository, MockRepository>();
+			services.AddScoped<IImageHelper, ImageHelper>();
+			services.AddScoped<IConverterHelper, ConverterHelper>();
+			//services.AddScoped<IRepository, Repository>(); // Register the repository service
+			//services.AddScoped<IRepository, MockRepository>();
 			services.AddScoped<IProductRepository, ProductRepository>(); 
 			services.AddControllersWithViews(); // Add services for controllers with views
 		}
