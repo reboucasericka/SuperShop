@@ -11,20 +11,20 @@ namespace SuperShop
         {
             var host = CreateHostBuilder(args).Build();
             RunSeeding(host);
-            host.Run(); 
-		}
+            host.Run();
+        }
 
-		private static void RunSeeding(IHost host)
-		{
-			var scopeFactory = host.Services.GetService<IServiceScopeFactory>();
+        private static void RunSeeding(IHost host)
+        {
+            var scopeFactory = host.Services.GetService<IServiceScopeFactory>();
             using (var scope = scopeFactory.CreateScope())
             {
                 var seeder = scope.ServiceProvider.GetService<SeedDb>();
                 seeder.SeedAsync().Wait(); // Wait for the seeding to complete
-			}
-		}
+            }
+        }
 
-		public static IHostBuilder CreateHostBuilder(string[] args) =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

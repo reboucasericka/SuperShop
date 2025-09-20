@@ -74,6 +74,7 @@ namespace SuperShop
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+
             app.UseAuthentication(); // Enable authentication middleware
 			app.UseAuthorization();
             app.UseEndpoints(endpoints =>

@@ -27,18 +27,18 @@ namespace SuperShop.Data
 			//verifica se existe a bd se nao existir cria a bd
 			await _context.Database.EnsureCreatedAsync(); // Ensure the database is created
 			//verifica se esse usuario existe se nao existir cria o usuario
-			var user = await _userHelper.GetUserByEmailAsync("erickareboucas@hotmail.com");
+			var user = await _userHelper.GetUserByEmailAsync("reboucasericka@gmail.com");
 			if (user == null) // se o usuario nao existir ele cria o usuario novo
 			{
 				user = new User
 				{
-					FirstName = "Erick",
-					LastName = "Areboucas",
-					Email = "erickareboucas@hotmail.com",
-					UserName = "erickareboucas@hotmail.com",
-					PhoneNumber = "11999999999"
+					FirstName = "ericka",
+					LastName = "reboucas",
+					Email = "reboucasericka@gmail.com",
+					UserName = "reboucasericka",
+					PhoneNumber = "000000000"
 				};
-				var result = await _userHelper.AddUserAsync(user, "123456789"); // Create the user with a password
+				var result = await _userHelper.AddUserAsync(user, "123456"); // Create the user with a password
 				if (result != IdentityResult.Success) // Check if the user was created successfully
 				{
 					throw new InvalidOperationException("Could not create the user in seed");
