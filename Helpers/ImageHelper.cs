@@ -15,9 +15,9 @@ namespace SuperShop.Helpers
 			string path = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\images\\{folder}",file); //
 			using (FileStream stream = new FileStream(path, FileMode.Create)) // 
 			{
-				await imageFile.CopyToAsync(stream); // Cusly
+				await imageFile.CopyToAsync(stream); //
 			}
-			return  $"~/images/{folder}/{file}"; // Set the path to the image file in the wwwroot folder
+			return  $"~/images/{folder}/{file}"; // 
 		}
 	}	
 }

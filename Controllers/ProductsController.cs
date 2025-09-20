@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Internal.VisualStudio.PlatformUI;
 using SuperShop.Data;
 using SuperShop.Data.Entities;
 using SuperShop.Helpers;
@@ -17,18 +18,21 @@ namespace SuperShop.Controllers
     {
         private readonly IProductRepository _productRepository;
 		private readonly IUserHelper _userHelper;
-		private readonly IImageHelper _imageHelper;
+		//private readonly IImageHelper _imageHelper;
+        private readonly IBlobHelper _blobHelper;
 		private readonly IConverterHelper _converterHelper;
 
 		public ProductsController(
             IProductRepository productRepository, 
             IUserHelper userHelper, 
-            IImageHelper imageHelper,
-            IConverterHelper converterHelper)
+            //IImageHelper imageHelper,
+            IBlobHelper blobHelper,
+			IConverterHelper converterHelper)
         {
             _productRepository = productRepository;
 			_userHelper = userHelper;
-			_imageHelper = imageHelper;
+			//_imageHelper = ImageHelper;
+            _blobHelper = blobHelper;
 			_converterHelper = converterHelper;
 		}
         // GET: Products
@@ -69,12 +73,15 @@ namespace SuperShop.Controllers
         {
             if (ModelState.IsValid)
             {
-                var path = string.Empty; // Initialize the path variable to an empty string
+                Guid imageId = Guid.Empty; // Initialize imageId to an empty GUID
+               
                 if (model.ImageFile != null && model.ImageFile.Length > 0) // Check if the ImageFile is not null
-                {                   
-					path = await _imageHelper.UploadImageAsync(model.ImageFile, "products");
-				}                
-                var product = _converterHelper.ToProduct(model, path, true);
+                {
+					imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "products");
+				}
+                var product = _converterHelper.ToProduct(model, imageId, true);
+
+
 				//TODO: MODIFICAR PARA O USER QUE ESTIVER LOGADO
 				//antes de gravar o produto, vamos associar o usuario que esta logado
 				product.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name); // Get the user by email from the UserHelper
@@ -119,14 +126,15 @@ namespace SuperShop.Controllers
             {
                 try
                 {
-                    var path = model.ImageUrl; // Initialize the path variable to the current image URL
+                    //var path = model.ImageUrl; // Initialize the path variable to the current image URL
+                    Guid imageId = model.ImageId;
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0) // Check if the ImageFile is not null
                     {						
-                        path = await _imageHelper.UploadImageAsync( model.ImageFile, "products");
-					}
-                    
-                    var product = _converterHelper.ToProduct(model, path, false);
+                        imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "products");
+                    }
+
+                    var product = _converterHelper.ToProduct(model, imageId, false);
 
 
 					//TODO: antes de gravar o produto, vamos associar o usuario que esta logado
