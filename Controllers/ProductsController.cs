@@ -80,9 +80,9 @@ namespace SuperShop.Controllers
                 var product = _converterHelper.ToProduct(model, imageId, true);
 
 
-				//TODO: MODIFICAR PARA O USER QUE ESTIVER LOGADO
+				
 				//antes de gravar o produto, vamos associar o usuario que esta logado
-				product.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name); // Get the user by email from the UserHelper
+				product.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name); // Get the user by email from the UserHelper
 				await _productRepository.CreateAsync(product);          // CreateAsync is an async method that adds the product to the database
                 return RedirectToAction(nameof(Index));
             }
@@ -135,7 +135,7 @@ namespace SuperShop.Controllers
                     var product = _converterHelper.ToProduct(model, imageId, false);
 
 
-					//TODO: antes de gravar o produto, vamos associar o usuario que esta logado
+					
 					product.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name); // Get the user by email from the UserHelper
 					await _productRepository.UpdateAsync(product); // UpdateAsync is an async method that updates the product in the database
                 }
