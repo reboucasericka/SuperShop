@@ -26,8 +26,11 @@ namespace SuperShop.Data
 		{
 			//verifica se existe a bd se nao existir cria a bd
 			await _context.Database.EnsureCreatedAsync(); // Ensure the database is created
-			//verifica se esse usuario existe se nao existir cria o usuario
-			var user = await _userHelper.GetUserByEmailAsync("reboucasericka@gmail.com");
+
+		    await _userHelper.CheckRoleAsync("Admin"); //verifica se a role admin existe se nao existir cria a role
+            await _userHelper.CheckRoleAsync("Customer"); //verifica se a role customer existe se nao existir cria a role
+            //verifica se esse usuario existe se nao existir cria o usuario
+            var user = await _userHelper.GetUserByEmailAsync("reboucasericka@gmail.com");
 			if (user == null) // se o usuario nao existir ele cria o usuario novo
 			{
 				user = new User
@@ -43,8 +46,18 @@ namespace SuperShop.Data
 				{
 					throw new InvalidOperationException("Could not create the user in seed");
 				}
+
+				await _userHelper.AddUserToRoleAsync(user, "Admin"); // Assign the user to the Admin role
+
+            }
+			var isInRole = await _userHelper.IsUserInRoleAsync(user, "Admin");//verifica se o user esta na role admin
+
+			if (!isInRole) //se nao estiver na role admin ele adiciona o user a role admin
+			{
+				await _userHelper.AddUserToRoleAsync(user, "Admin");
 			}
-			if (!_context.Products.Any()) // Check if there are no products in the database
+
+            if (!_context.Products.Any()) // Check if there are no products in the database
 		    {
 				AddProduct(" iPhone X", user);
 				AddProduct(" iPhone X", user);

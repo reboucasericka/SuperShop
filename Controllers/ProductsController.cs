@@ -55,10 +55,11 @@ namespace SuperShop.Controllers
             }
             return View(product);
         }
-		// GET: Products/Create
-		//CREATE é um método que retorna uma view para criar um novo produto
-		//
-		public IActionResult Create()
+        // GET: Products/Create
+        //CREATE é um método que retorna uma view para criar um novo produto
+        //
+        [Authorize(Roles = "Admin")]
+        public IActionResult Create()
         {
             return View();
         }
