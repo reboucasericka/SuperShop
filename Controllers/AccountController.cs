@@ -171,5 +171,10 @@ namespace SuperShop.Controllers
             }
             return View(model); //retorna a view com o modelo
         }
+
+        public IActionResult NotAuthorized() //metodo para quando o user nao tiver autorizacao
+        {
+            return View(); //retorna a view
+        }
     }
 }

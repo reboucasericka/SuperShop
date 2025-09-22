@@ -51,9 +51,15 @@ namespace SuperShop
 
 
 			services.AddScoped<IProductRepository, ProductRepository>(); 
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/NotAuthorized"; // verifica se o user esta autorizado
+                options.AccessDeniedPath = "/Account/NotAuthorized"; // verifica se o user tem acesso
+                
+            });
 
 
-			services.AddControllersWithViews(); // Add services for controllers with views
+            services.AddControllersWithViews(); // Add services for controllers with views
 		}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,7 +75,7 @@ namespace SuperShop
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.UseStatusCodePagesWithReExecute("/error/{0}"); // erro de pagina tem que fazer no primeiro que arranca. controlador  homecontroller
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

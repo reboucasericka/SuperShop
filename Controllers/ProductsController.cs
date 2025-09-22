@@ -46,12 +46,12 @@ namespace SuperShop.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ProductNotFound");
             }
             var product = await _productRepository.GetByIdAsync(id.Value);
             if (product == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ProductNotFound");
             }
             return View(product);
         }
@@ -92,19 +92,20 @@ namespace SuperShop.Controllers
 
 		
         //******************************************************************************
-		// GET: Products/Edit/5
-		//EDIT é um método que retorna uma view para editar um produto existente
+        //
+		// GET: Products/Edit/5 EDIT é um método que retorna uma view para editar um produto existente
+        //
 		//******************************************************************************
 		public async Task<IActionResult> Edit(int? id)  // Edit is an async method that retrieves the product by id
 		{
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ProductNotFound");
             }
             var product = await _productRepository.GetByIdAsync(id.Value);
             if (product == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ProductNotFound");
             }
 			// ANTES DE RETORNAR A VIEW, PRECISAMOS CONVERTER O PRODUCT PARA O PRODUCTVIEWMODEL
             
@@ -144,7 +145,7 @@ namespace SuperShop.Controllers
                 {
                     if (!await _productRepository.ExistAsync(model.Id))
                     {
-                        return NotFound();
+                        return new NotFoundViewResult("ProductNotFound");
                     }
                     else
                     {
@@ -163,13 +164,13 @@ namespace SuperShop.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ProductNotFound");
             }
 
             var product = await _productRepository.GetByIdAsync(id.Value);
             if (product == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ProductNotFound");
             }
 
             return View(product);
@@ -184,5 +185,10 @@ namespace SuperShop.Controllers
             await _productRepository.DeleteAsync(product);
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult ProductNotFound()
+        {
+            return View();
+        }   
     }
 }
