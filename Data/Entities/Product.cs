@@ -8,20 +8,26 @@ namespace SuperShop.Data.Entities
 		public int Id { get; set; }
 
 		[Required]
-		[MaxLength(50, ErrorMessage ="The field {0} can contain {1} characters length.")] // Assuming a maximum length of 50 characters for the product name
+		[MaxLength(50, ErrorMessage = "The field {0} can contain {1} characters length.")] // Assuming a maximum length of 50 characters for the product name
 
 		public string Name { get; set; }
 
-		[DisplayFormat(DataFormatString = "{0:C}",  ApplyFormatInEditMode = false)]
+		[DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
 		public decimal Price { get; set; }
+
+
+
 
 		[Display(Name = "Image")]
 
-        //public string ImageUrl { get; set; } modificado para usar o blob
-        public Guid ImageId { get; set; } // Guid para identificar a imagem no blob
+		//public string ImageUrl { get; set; } modificado para usar o blob
+		public Guid ImageId { get; set; } // Guid para identificar a imagem no blob
 
-        [Display(Name = "Last Purchase ")] //datas obrigatorias
-		public  DateTime? LastPurchase { get; set; } //?opcionais
+
+
+
+		[Display(Name = "Last Purchase ")] //datas obrigatorias
+		public DateTime? LastPurchase { get; set; } //?opcionais
 
 		[Display(Name = "Last Sale ")]
 		public DateTime? LastSale { get; set; } //optionais
@@ -36,9 +42,17 @@ namespace SuperShop.Data.Entities
 
 		public User User { get; set; } // Assuming a User entity exists and is related to Product
 
-		public string ImageFullPath => ImageId == Guid.Empty
-			? $"https://supershop5417.azurewebsites.net/images/noimage.png"
-			: $"https://supershop5417.blob.core.windows.net/products/{ImageId}";
-
+		public string ImageFullPath
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(ImageFullPath))
+				{
+					return null;
+				}
+				return ImageFullPath;
+			}
+		}
 	}
 }
+			

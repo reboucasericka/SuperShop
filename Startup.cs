@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using SuperShop.Data;
 using SuperShop.Data.Entities;
 using SuperShop.Helpers;
@@ -33,7 +34,8 @@ namespace SuperShop
                 cfg.Password.RequireLowercase = false; // No lowercase letters required in passwords
                 cfg.Password.RequireNonAlphanumeric = false; // No special characters required in passwords
                 cfg.Password.RequiredLength = 6; // Minimum length of 6 characters for passwords
-			})
+                cfg.SignIn.RequireConfirmedAccount = false; // Desativa a confirmação de email
+            })
             .AddEntityFrameworkStores<DataContext>();// Use DataContext for storing user data
 
 			services.AddDbContext<DataContext>(cfg =>
@@ -42,15 +44,28 @@ namespace SuperShop
             });
 
             services.AddTransient<SeedDb>();   // Register the SeedDb service to seed the database
+
 			services.AddScoped<IUserHelper, UserHelper>(); // Register the IUserHelper service for user management
-            //services.AddScoped<IImageHelper, ImageHelper>(); se entra o bolob sai o image
+
+            
 			services.AddScoped<IBlobHelper, BlobHelper>();
+
 			services.AddScoped<IConverterHelper, ConverterHelper>();
-			//services.AddScoped<IRepository, Repository>(); // Register the repository service
-			//services.AddScoped<IRepository, MockRepository>();
+
+            services.AddScoped<IProductRepository, ProductRepository>();
+
+            services.AddScoped<IOrderRepository, OrderRepository>();
 
 
-			services.AddScoped<IProductRepository, ProductRepository>(); 
+
+            //services.AddScoped<IRepository, Repository>(); // Register the repository service
+            //services.AddScoped<IRepository, MockRepository>();
+            //services.AddScoped<IImageHelper, ImageHelper>(); se entra o bolob sai o image
+
+
+
+
+            // Configure application cookie settings
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Account/NotAuthorized"; // verifica se o user esta autorizado
