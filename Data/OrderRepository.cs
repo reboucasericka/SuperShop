@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
 using SuperShop.Data.Entities;
 using SuperShop.Helpers;
 using SuperShop.Models;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -55,6 +57,44 @@ namespace SuperShop.Data
             await _context.SaveChangesAsync();
         }
 
+        public async Task<bool> ConfirmOrderAsync(string userName)
+        {
+            var user = await _userHelper.GetUserByEmailAsync(userName);
+            if (user == null)
+            {
+                return false;
+            }
+                var orderTmps = await _context.OrderDetailsTemp
+                    .Include(o => o.Product)
+                    .Where(o => o.User == user)
+                    .ToListAsync();
+            if(orderTmps == null || orderTmps.Count == 0)
+            {
+                return false;
+
+            }
+            var details = orderTmps.Select(o => new OrderDetail
+            {
+                Price = o.Price,
+                Product = o.Product,
+                Quantity = o.Quantity,
+            }).ToList();
+
+            var order = new Order
+            {
+                OrderDate = DateTime.UtcNow,
+                User = user,
+                Items = details
+
+            };
+
+            await CreateAsync(order);
+            _context.OrderDetailsTemp.RemoveRange(orderTmps);
+            await _context.SaveChangesAsync();
+            return true;
+            
+        }
+
         public async Task DeleteDetailTempAsync(int id)
         {
             var orderdetailTemp = await _context.OrderDetailsTemp.FindAsync(id);
@@ -88,15 +128,16 @@ namespace SuperShop.Data
                 return null;
             }
 
-            if (await _userHelper.IsUserInRoleAsync(user, "Admin"))
+            if (await _userHelper.IsUserInRoleAsync(user, "Admin")) //busca todas as orders 
             {
                 return _context.Orders
+                    .Include(o => o.User)
                     .Include(o => o.Items)
                     .ThenInclude(p  => p.Product)
                     .OrderByDescending(o => o.OrderDate);
 
             }
-            return _context.Orders
+            return _context.Orders //
                 .Include(o => o.Items)
                 .ThenInclude(p  => p.Product)
                 .Where(o  => o.User == user)
