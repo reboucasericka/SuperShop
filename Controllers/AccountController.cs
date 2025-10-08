@@ -107,7 +107,7 @@ namespace SuperShop.Controllers
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name); //vai buscar o user pelo email
             var model = new ChangeUserViewModel(); //cria um novo modelo
 
-            if (user == null) //se o user for nulo
+            if (user != null) //se o user não for nulo
             {
                 model.FirstName = user.FirstName;
                 model.LastName = user.LastName;
@@ -121,7 +121,7 @@ namespace SuperShop.Controllers
             if (ModelState.IsValid) //verifica se o modelo e valido
             {
                 var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name); //vai buscar o user pelo email
-                if (user != null) //se o user for nulo
+                if (user != null) //se o user não for nulo
                 {
                     user.FirstName = model.FirstName; //atualiza o primeiro nome
                     user.LastName = model.LastName; //atualiza o ultimo nome

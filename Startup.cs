@@ -98,6 +98,8 @@ namespace SuperShop
 
             app.UseAuthentication(); // Enable authentication middleware
 			app.UseAuthorization();
+
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

@@ -12,8 +12,8 @@ using SuperShop.Data;
 namespace SuperShop.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20251007142617_UpdateEntitiesWithForeignKeys")]
-    partial class UpdateEntitiesWithForeignKeys
+    [Migration("20251008141752_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

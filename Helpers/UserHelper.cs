@@ -57,7 +57,19 @@ namespace SuperShop.Helpers
 
         public async Task<SignInResult> LoginAsync(LoginViewModel model)
         {
-            return await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
+            // Primeiro, tenta encontrar o usuário pelo email
+            var user = await _userManager.FindByEmailAsync(model.Username);
+            
+            if (user != null)
+            {
+                // Se encontrou pelo email, faz login usando o UserName
+                return await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, false);
+            }
+            else
+            {
+                // Se não encontrou pelo email, tenta fazer login diretamente com o username
+                return await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
+            }
         }
 
         public async Task LogoutAsync()
