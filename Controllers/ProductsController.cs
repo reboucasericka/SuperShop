@@ -141,7 +141,7 @@ namespace SuperShop.Controllers
 					product.User = await _userHelper.GetUserByEmailAsync(User.Identity.Name); // Get the user by email from the UserHelper
 					await _productRepository.UpdateAsync(product); // UpdateAsync is an async method that updates the product in the database
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception)
                 {
                     if (!await _productRepository.ExistAsync(model.Id))
                     {
@@ -182,8 +182,22 @@ namespace SuperShop.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
-            await _productRepository.DeleteAsync(product);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _productRepository.DeleteAsync(product);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException != null && ex.InnerException.Message.Contains("DELETE"))
+                {
+                    ViewBag.Errortitle = $"{product.Name} provavelmentes esta a ser usado!";
+                    ViewBag.ErrorMessage = $"{product.Name} nao pode ser apagago";
+                }
+                
+                return View("Error");
+            }
+
         }
 
         public IActionResult ProductNotFound()

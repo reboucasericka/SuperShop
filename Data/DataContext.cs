@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SuperShop.Data.Entities;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SuperShop.Data
@@ -22,5 +23,21 @@ namespace SuperShop.Data
 		{
 
 		}
+
+
+		//APAGA TUDO EM CASCATA 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+			var cascadeFks = modelBuilder.Model
+				.GetEntityTypes()
+				.SelectMany(t => t.GetDeclaredForeignKeys())
+				.Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
+			foreach(var fk in cascadeFks)
+			{
+				fk.DeleteBehavior = DeleteBehavior.Restrict;
+			}
+			base.OnModelCreating(modelBuilder);
+        }
 	}
 }
